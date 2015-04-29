@@ -44,11 +44,11 @@ namespace GabMouseColorPicker
             this.label5 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.rbBase10 = new System.Windows.Forms.RadioButton();
+            this.rbHex = new System.Windows.Forms.RadioButton();
             this.txtCopy = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.chkAutoCopy = new System.Windows.Forms.CheckBox();
-            this.rbHex = new System.Windows.Forms.RadioButton();
             this.rbMouse = new System.Windows.Forms.RadioButton();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -115,7 +115,7 @@ namespace GabMouseColorPicker
             // 
             // timer1
             // 
-            this.timer1.Interval = 1;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // rbPosition
@@ -188,6 +188,20 @@ namespace GabMouseColorPicker
             this.rbBase10.Text = "Base 10 values";
             this.rbBase10.UseVisualStyleBackColor = true;
             // 
+            // rbHex
+            // 
+            this.rbHex.AutoSize = true;
+            this.rbHex.Checked = global::GabMouseColorPicker.Properties.Settings.Default.GMCPSetting_General_HexValues;
+            this.rbHex.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GabMouseColorPicker.Properties.Settings.Default, "GMCPSetting_General_HexValues", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.rbHex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.rbHex.Location = new System.Drawing.Point(3, 3);
+            this.rbHex.Name = "rbHex";
+            this.rbHex.Size = new System.Drawing.Size(119, 17);
+            this.rbHex.TabIndex = 0;
+            this.rbHex.TabStop = true;
+            this.rbHex.Text = "Hexadecimal values";
+            this.rbHex.UseVisualStyleBackColor = true;
+            // 
             // txtCopy
             // 
             this.txtCopy.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -195,6 +209,7 @@ namespace GabMouseColorPicker
             this.txtCopy.Name = "txtCopy";
             this.txtCopy.Size = new System.Drawing.Size(129, 20);
             this.txtCopy.TabIndex = 14;
+            this.txtCopy.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtCopy_KeyDown);
             // 
             // label6
             // 
@@ -203,7 +218,7 @@ namespace GabMouseColorPicker
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(147, 26);
             this.label6.TabIndex = 15;
-            this.label6.Text = "CTRL+Space : Stop/Resume\r\nmouse capture";
+            this.label6.Text = "CTRL+Space : Stop/Resume\r\ncapture";
             // 
             // lblStatus
             // 
@@ -227,20 +242,6 @@ namespace GabMouseColorPicker
             this.chkAutoCopy.TabIndex = 18;
             this.chkAutoCopy.Text = "Auto copy to clipboard";
             this.chkAutoCopy.UseVisualStyleBackColor = true;
-            // 
-            // rbHex
-            // 
-            this.rbHex.AutoSize = true;
-            this.rbHex.Checked = global::GabMouseColorPicker.Properties.Settings.Default.GMCPSetting_General_HexValues;
-            this.rbHex.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GabMouseColorPicker.Properties.Settings.Default, "GMCPSetting_General_HexValues", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.rbHex.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.rbHex.Location = new System.Drawing.Point(3, 3);
-            this.rbHex.Name = "rbHex";
-            this.rbHex.Size = new System.Drawing.Size(119, 17);
-            this.rbHex.TabIndex = 0;
-            this.rbHex.TabStop = true;
-            this.rbHex.Text = "Hexadecimal values";
-            this.rbHex.UseVisualStyleBackColor = true;
             // 
             // rbMouse
             // 
@@ -287,8 +288,8 @@ namespace GabMouseColorPicker
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gab Mouse Color Picker";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.frmMain_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_Closing);
+            this.Load += new System.EventHandler(this.frmMain_Load);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.ResumeLayout(false);

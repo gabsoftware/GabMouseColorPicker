@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using GabMouseColorPicker.Properties;
 using GabSoftware.Utils;
+using System.Globalization;
 
 namespace GabMouseColorPicker
 {
@@ -36,11 +37,13 @@ namespace GabMouseColorPicker
                 {
                     this.lblStatus.ForeColor = Color.DarkGreen;
                     this.lblStatus.Text = "Active";
+                    timer1.Start();
                 }
                 else
                 {
                     this.lblStatus.ForeColor = Color.DarkRed;
                     this.lblStatus.Text = "Stopped";
+                    timer1.Stop();
                 }
             }
         }
@@ -67,7 +70,7 @@ namespace GabMouseColorPicker
             Point pt;
             if (this.rbMouse.Checked == true && this.CaptureMouse == true )
             {
-            // Get the current mouse position (screen coordinates).
+                // Get the current mouse position (screen coordinates).
                 pt = MousePosition;
             }
             else
@@ -82,21 +85,31 @@ namespace GabMouseColorPicker
                 }
             }
 
+            txtX.Text = pt.X.ToString();
+            txtY.Text = pt.Y.ToString();
+
             // Call the three external functions.
             Color clr;
             IntPtr hdcScreen = CreateDC("Display", null, null, IntPtr.Zero);
             int cr = GetPixel(hdcScreen, pt.X, pt.Y);
             DeleteDC(hdcScreen);
-
+                       
             // Convert a Win32 COLORREF to a .NET Color object
-
             clr = Color.FromArgb((cr & 0x000000FF),
                                  (cr & 0x0000FF00) >> 8,
                                  (cr & 0x00FF0000) >> 16);
+
+            updateColor(clr);
+
+            //copie dans le presse papier
+            txtCopy.SelectAll();
+            if (this.chkAutoCopy.Checked == true) txtCopy.Copy();
             
+        }
+
+        private void updateColor( Color clr, Boolean alsoTxtCopy = true )
+        {
             panel1.BackColor = clr;
-            txtX.Text = pt.X.ToString();
-            txtY.Text = pt.Y.ToString();
 
             //hexa ou base 10
             if (rbBase10.Checked == true)
@@ -104,20 +117,18 @@ namespace GabMouseColorPicker
                 txtR.Text = clr.R.ToString("000");
                 txtG.Text = clr.G.ToString("000");
                 txtB.Text = clr.B.ToString("000");
-                txtCopy.Text = txtR.Text + "," + txtG.Text + "," + txtB.Text;
+
+                if( alsoTxtCopy )
+                    txtCopy.Text = txtR.Text + "," + txtG.Text + "," + txtB.Text;
             }
             else
             {
                 txtR.Text = clr.R.ToString("X2");
                 txtG.Text = clr.G.ToString("X2");
                 txtB.Text = clr.B.ToString("X2");
-                txtCopy.Text = "#" + txtR.Text + txtG.Text + txtB.Text;
+                if (alsoTxtCopy)
+                    txtCopy.Text = "#" + txtR.Text + txtG.Text + txtB.Text;
             }
-
-            //copie dans le presse papier
-            txtCopy.SelectAll();
-            if (this.chkAutoCopy.Checked == true) txtCopy.Copy();
-            
         }
 
 
@@ -147,6 +158,41 @@ namespace GabMouseColorPicker
         private void frmMain_Closing(object sender, FormClosingEventArgs e)
         {
             Settings.Default.Save();
+        }
+
+        private void txtCopy_KeyDown(object sender, KeyEventArgs e)
+        {
+            if( !this.CaptureMouse && e.KeyCode == Keys.Enter )
+            {
+                Color  clr;
+                int    incol1;
+                int    incol2;
+                int    incol3;
+                string hex1;
+                string hex2;
+                string hex3;
+                CultureInfo provider = CultureInfo.InvariantCulture;
+                try
+                {
+                    hex1 = txtCopy.Text.Substring(1, 2);
+                    hex2 = txtCopy.Text.Substring(3, 2);
+                    hex3 = txtCopy.Text.Substring(5, 2);
+
+                    if( Int32.TryParse( hex1, System.Globalization.NumberStyles.HexNumber, provider, out incol1)
+                    &&  Int32.TryParse( hex2, System.Globalization.NumberStyles.HexNumber, provider, out incol2)
+                    &&  Int32.TryParse( hex3, System.Globalization.NumberStyles.HexNumber, provider, out incol3))
+                    {
+                        clr = Color.FromArgb(incol1, incol2, incol3);
+                        updateColor(clr, false);
+                    }
+                    
+                }
+                catch (Exception)
+                {
+                    
+                    //throw;
+                }
+            }
         }
     }
 
